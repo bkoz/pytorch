@@ -1,3 +1,14 @@
+#
+# Pytorch example with Ray
+# This example demonstrates how to use Ray with PyTorch for distributed training.
+# 
+# Import necessary libraries
+import ray
+import ray.train
+from ray.train import ScalingConfig
+from ray.train.torch import TorchTrainer
+
+
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
@@ -49,7 +60,9 @@ loss_fn = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model.parameters(), lr=1e-3)
 
 def train(dataloader, model, loss_fn, optimizer):
+
     size = len(dataloader.dataset)
+
     model.train()
     for batch, (X, y) in enumerate(dataloader):
         X, y = X.to(device), y.to(device)
@@ -82,10 +95,50 @@ def test(dataloader, model, loss_fn):
     correct /= size
     logger.info(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
+# Iinitialize Ray
+ray.init()
+# Create a Trainer
+
+global_batch_size = 32
+num_workers=2
+use_gpu=False
+
+train_config = {
+    "lr": 1e-3,
+    "epochs": 10,
+    "batch_size_per_worker": global_batch_size // num_workers,
+}
+
+# Configure computation resources
+scaling_config = ScalingConfig(num_workers=num_workers, use_gpu=use_gpu)
+
+# Initialize a Ray TorchTrainer
+trainer = TorchTrainer(
+    train_loop_per_worker=train,
+    train_loop_config=train_config,
+    scaling_config=scaling_config,
+    )
+
+# [1] Prepare Dataloader for distributed training
+# Shard the datasets among workers and move batches to the correct device
+# =======================================================================
+train_dataloader = ray.train.torch.prepare_data_loader(train_dataloader)
+test_dataloader = ray.train.torch.prepare_data_loader(test_dataloader)
+
+# [2] Prepare and wrap your model with DistributedDataParallel
+# Move the model to the correct GPU/CPU device
+# ============================================================
+model = ray.train.torch.prepare_model(model)
+
 epochs = 5
 start = time.time()
 for t in range(epochs):
     logger.info(f"Epoch {t+1}\n-------------------------------")
+
+    if ray.train.get_context().get_world_size() > 1:
+            # Required for the distributed sampler to shuffle properly across epochs.
+        train_dataloader.sampler.set_epoch(t)
+
     train(train_dataloader, model, loss_fn, optimizer)
     test(test_dataloader, model, loss_fn)
 
