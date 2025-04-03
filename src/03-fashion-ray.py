@@ -151,6 +151,6 @@ def train_fashion_mnist(num_workers=2, use_gpu=False):
 
 if __name__ == "__main__":
     start = time.time()
-    train_fashion_mnist(num_workers=1, use_gpu=False)
+    train_fashion_mnist(num_workers=2, use_gpu=False)
     end = time.time()
     print(f"Training time: {end - start:.2f} seconds")
