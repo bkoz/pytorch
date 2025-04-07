@@ -13,20 +13,22 @@ def check_accelerator():
     else:
         device = "cpu"
 
-    print(f"Using accelerator device: {device}")
+    return device
+
 
     
-check_accelerator()
+device = check_accelerator()
+print(f"Using accelerator device: {device}")
 
 N, D = 3, 4
 
-x = torch.rand((N, D), requires_grad=True)
-y = torch.rand((N, D), requires_grad=True)
-z = torch.rand((N, D), requires_grad=True)
+x = torch.rand((N, D), requires_grad=True).to(device)
+y = torch.rand((N, D), requires_grad=True).to(device)
+z = torch.rand((N, D), requires_grad=True).to(device)
 
-a = x * y
-b = a + z
-c = torch.sum(b)
+a = (x * y).to(device)
+b = (a + z).to(device)
+c = torch.sum(b).to(device)
 
 c.backward()
 
