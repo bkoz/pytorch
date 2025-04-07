@@ -1,9 +1,22 @@
 #
-# Taken from https://www.cs.princeton.edu/courses/archive/fall19/cos484/lectures/pytorch.pdf
+# Basic Pytorch checks
 #
 import torch
+import torch.backends
 
-print(f'accelerator = {torch.accelerator.is_available()}')
+def check_accelerator():
+    
+    if torch.cuda.is_available():
+        device = "cuda" # NVIDIA GPU
+    elif torch.backends.mps.is_available():
+        device = "mps" # Apple GPU
+    else:
+        device = "cpu"
+
+    print(f"Using accelerator device: {device}")
+
+    
+check_accelerator()
 
 N, D = 3, 4
 
