@@ -9,6 +9,11 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 import torch.optim as optim
 
+import logging
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+
 # Define a simple neural network
 class SimpleNN(nn.Module):
     def __init__(self):
@@ -44,6 +49,8 @@ test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 # Model, loss function, and optimizer
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+logger.info(f"Pytorch is using device: {device}")
+
 model = SimpleNN().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
@@ -80,4 +87,4 @@ with torch.no_grad():
         total += labels.size(0)
         correct += (predicted == labels).sum().item()
 
-print(f"Test Accuracy: {100 * correct / total:.2f}%")
+logger.info(f"Test Accuracy: {100 * correct / total:.2f}%")
