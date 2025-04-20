@@ -5,13 +5,26 @@
 import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
-
 import torch.nn as nn
 import torch.optim as optim
-
+import torch.backends
+import time
 import logging
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+
+def check_accelerator():
+    
+    if torch.cuda.is_available():
+        device = "cuda" # NVIDIA GPU
+    elif torch.backends.mps.is_available():
+        device = "mps" # Apple GPU
+    else:
+        device = "cpu"
+
+    return device
 
 
 # Define a simple neural network
@@ -48,12 +61,17 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 
 # Model, loss function, and optimizer
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device = check_accelerator()
+# device = 'cpu'
 logger.info(f"Pytorch is using device: {device}")
 
 model = SimpleNN().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+
+# Timing the training process
+start_time = time.time()
 
 # Training loop
 for epoch in range(epochs):
@@ -74,6 +92,9 @@ for epoch in range(epochs):
         running_loss += loss.item()
 
     print(f"Epoch [{epoch+1}/{epochs}], Loss: {running_loss/len(train_loader):.4f}")
+
+end_time = time.time()
+logger.info(f"Training Time: {end_time - start_time:.2f} seconds")
 
 # Testing loop
 model.eval()
