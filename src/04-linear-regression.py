@@ -7,7 +7,7 @@ import logging
 import os
 
 logger = logging.getLogger()
-logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 def concatenate_files(file_list, output_file):
     with open(output_file, 'w') as outfile:
