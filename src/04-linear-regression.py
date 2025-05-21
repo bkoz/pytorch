@@ -9,6 +9,13 @@ import os
 logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.DEBUG)
 
+def concatenate_files(file_list, output_file):
+    with open(output_file, 'w') as outfile:
+        for filename in file_list:
+            with open(filename, 'r') as infile:
+                for line in infile:
+                    outfile.write(line)
+
 # Training data
 x_data = Variable(torch.Tensor([[1.0], [2.0], [3.0]]))
 y_data = Variable(torch.Tensor([[2.0], [4.0], [6.0]]))
@@ -52,24 +59,34 @@ for epoch in range(epochs):
     optimizer.step()
     logger.debug('epoch {}, loss {}'.format(epoch, loss.item()))
 
+# Test the model
 new_var = Variable(torch.Tensor([[2.5]]))
 pred_y = our_model(new_var)
 
 # logger.info(f"{x_data = } {y_data}")
 logger.info(f"{new_var = } {pred_y = }")
 
-# Save the model
-dir_path = "models"
+# Build the model repository structure
+model_repository = "models/lr"
+dir_path = model_repository + "/1"
 
 if os.path.isdir(dir_path):
     logger.info(f"Directory '{dir_path}' exists.")
 else:
     logger.info(f"Directory '{dir_path}' does not exist.")
-    os.mkdir("models")
+    os.makedirs(dir_path)
+    logger.info(f"Directory '{dir_path}' created.")
 
-model_file = "/lr.pt"
-dir_path = "models" + model_file
-# torch.save(our_model.state_dict(), dir_path)
-logger.info(f"Saved PyTorch Model State to {dir_path}")
+# Save the model
+model_file = "/model.pt"
+model_file_path =  dir_path + model_file
 scripted_model = torch.jit.script(our_model)
-torch.jit.save(scripted_model, dir_path)
+torch.jit.save(scripted_model, model_file_path)
+logger.info(f"Saved PyTorch Model State to {model_file_path}")
+
+# Save the model protobuf config file
+config_file = ['src/config.pbtxt']
+config_file_path = model_repository + '/config.pbtxt'
+concatenate_files(config_file, config_file_path)
+logger.info(f"Saved Triton Model Config to {config_file_path}")
+
