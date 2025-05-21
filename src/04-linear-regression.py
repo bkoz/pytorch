@@ -13,6 +13,7 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=lo
 x_data = Variable(torch.Tensor([[1.0], [2.0], [3.0]]))
 y_data = Variable(torch.Tensor([[2.0], [4.0], [6.0]]))
 
+x_data.requires_grad = True
 
 class LinearRegressionModel(torch.nn.Module):
 
