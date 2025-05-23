@@ -41,4 +41,4 @@ for t in range(num_points):
    
 print(f'Model: y = {m:.3f}x + {b:.3f}')
 x_data = 2.0
-print(f'Predicted y({x_data}) = {m * x_data + b:.3f}')
+print(f'Prediction: y({x_data}) = {m * x_data + b:.3f}')
