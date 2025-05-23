@@ -23,7 +23,6 @@ b = np.random.randn()
 learning_rate = 1e-6
 for t in range(num_points):
     # Forward pass: compute predicted y
-    # y = a + b x + c x^2 + d x^3
     y_pred = m * x + b
 
     # Compute and print loss
