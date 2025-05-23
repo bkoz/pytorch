@@ -31,7 +31,7 @@ for t in range(num_points):
     if t % 100 == 99:
         print(t, loss)
 
-    # Backprop to compute gradients of a, b, c, d with respect to loss
+    # Backprop to compute gradients of m and b with respect to the loss.
     grad_y_pred = 2.0 * (y_pred - y)
     grad_b = grad_y_pred.sum()
     grad_m = (grad_y_pred * x).sum()
