@@ -28,7 +28,7 @@ for t in range(num_points):
     # Compute and print loss
     loss = np.square(y_pred - y).sum()
     if t % 100 == 99:
-        print(t, loss)
+        print(f'Iteration {t}, Loss: {loss:.2f}, m: {m:.3f}, b: {b:.3f}')
 
     # Backprop to compute gradients of m and b with respect to the loss.
     grad_y_pred = 2.0 * (y_pred - y)
