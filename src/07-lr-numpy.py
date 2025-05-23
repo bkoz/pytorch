@@ -2,9 +2,11 @@ import numpy as np
 import math
 import matplotlib.pyplot as plt
 
-# Create random input and output data
-x = np.linspace(-math.pi, math.pi, 2000)
-y = 2 * x
+num_points = 2000
+# Create n_points of input and random output data.
+x = np.linspace(-math.pi, math.pi, num_points)
+# Perturb the y values with some noise.
+y = 2 * x + np.random.randn(num_points) * 0.1 + 1
 
 # plot these points
 plt.plot(x, y)
@@ -12,14 +14,14 @@ plt.xlabel('x')
 plt.ylabel('y')
 plt.title('Data')
 plt.grid(True)
-plt.savefig('data.png')
+plt.savefig('lr-data.png')
 
 # Randomly initialize weights
 m = np.random.randn()
 b = np.random.randn()
 
 learning_rate = 1e-6
-for t in range(2000):
+for t in range(num_points):
     # Forward pass: compute predicted y
     # y = a + b x + c x^2 + d x^3
     y_pred = m * x + b
@@ -38,6 +40,6 @@ for t in range(2000):
     m -= learning_rate * grad_m
     b -= learning_rate * grad_b
    
-print(f'Model: y = {m}x + {b}')
+print(f'Model: y = {m:.3f}x + {b:.3f}')
 x_data = 2.0
-print(f'Predicted y({x_data}) = {m * x_data + b}')
+print(f'Predicted y({x_data}) = {m * x_data + b:.3f}')
