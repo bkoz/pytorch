@@ -4,3 +4,4 @@ torchvision
 ray[all]
 pandas
 tqdm
+matplotlib
