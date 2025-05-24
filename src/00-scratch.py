@@ -1,111 +1,49 @@
-#
-# This code was genearated by OpenAI's GPT-3 model using github copilot.
-# It is a simple PyTorch script that trains a neural network on the MNIST dataset.
-# The script includes data loading, model definition, training, and testing.
 import torch
-from torchvision import datasets, transforms
-from torch.utils.data import DataLoader
 import torch.nn as nn
-import torch.optim as optim
-import torch.backends
-import time
-import logging
+# Example of a simple linear layer in PyTorch
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+# Define a simple linear layer with one input feature and one output feature
+m = nn.Linear(1, 1)
 
+# Generate a random input tensor with values between 0 and 1 with shape (batch_size, num_features)
+X = torch.rand(5, 1)  # Example with batch size of 5 and 1 feature
+print(X)
 
-def check_accelerator():
-    
-    if torch.cuda.is_available():
-        device = "cuda" # NVIDIA GPU
-    elif torch.backends.mps.is_available():
-        device = "mps" # Apple GPU
-    else:
-        device = "cpu"
+# Generate an output tensor with the same shape as X with a slope of 2 and a y-intercept of 1
 
-    return device
-
-
-# Define a simple neural network
-class SimpleNN(nn.Module):
-    def __init__(self):
-        super(SimpleNN, self).__init__()
-        self.fc = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(28 * 28, 128),
-            nn.ReLU(),
-            nn.Linear(128, 64),
-            nn.ReLU(),
-            nn.Linear(64, 10)
-        )
-
-    def forward(self, x):
-        return self.fc(x)
-
-# Hyperparameters
-batch_size = 64
-learning_rate = 0.001
-epochs = 5
-
-# Data loading and preprocessing
-transform = transforms.Compose([
-    transforms.ToTensor(),
-    transforms.Normalize((0.5,), (0.5,))
-])
-
-train_dataset = datasets.MNIST(root='./data', train=True, transform=transform, download=True)
-test_dataset = datasets.MNIST(root='./data', train=False, transform=transform, download=True)
-
-train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
-# Model, loss function, and optimizer
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = check_accelerator()
-# device = 'cpu'
-logger.info(f"Pytorch is using device: {device}")
-
-model = SimpleNN().to(device)
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-
-# Timing the training process
-start_time = time.time()
-
-# Training loop
-for epoch in range(epochs):
-    model.train()
-    running_loss = 0.0
-    for images, labels in train_loader:
-        images, labels = images.to(device), labels.to(device)
-
-        # Forward pass
-        outputs = model(images)
-        loss = criterion(outputs, labels)
-
-        # Backward pass and optimization
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-        running_loss += loss.item()
-
-    print(f"Epoch [{epoch+1}/{epochs}], Loss: {running_loss/len(train_loader):.4f}")
-
-end_time = time.time()
-logger.info(f"Training Time: {end_time - start_time:.2f} seconds")
-
-# Testing loop
-model.eval()
-correct = 0
-total = 0
+# Train the model
+Y = 2 * X + 1
+# Forward pass through the linear layer
+Y_pred = m(X)
+# Calculate the loss using Mean Squared Error
+loss_fn = nn.MSELoss()
+loss = loss_fn(Y_pred, Y)
+# Print the loss
+print("Loss:", loss.item())
+# Backward pass to compute gradients
+loss.backward()
+# Print the gradients of the weights and bias
+print("Gradient of weights:", m.weight.grad)
+print("Gradient of bias:", m.bias.grad)
+# Update the weights and bias using gradient descent
+learning_rate = 0.01
 with torch.no_grad():
-    for images, labels in test_loader:
-        images, labels = images.to(device), labels.to(device)
-        outputs = model(images)
-        _, predicted = torch.max(outputs, 1)
-        total += labels.size(0)
-        correct += (predicted == labels).sum().item()
-
-logger.info(f"Test Accuracy: {100 * correct / total:.2f}%")
+    m.weight -= learning_rate * m.weight.grad
+    m.bias -= learning_rate * m.bias.grad
+# Reset gradients to zero for the next iteration
+m.weight.grad.zero_()
+m.bias.grad.zero_()
+# Forward pass again to see the updated predictions
+Y_pred_updated = m(X)
+# Print the updated predictions
+print("Updated Predictions:", Y_pred_updated)
+# Print the updated weights and bias
+print("Updated Weights:", m.weight)
+print("Updated Bias:", m.bias)
+# Print the final loss after the update
+final_loss = loss_fn(Y_pred_updated, Y)
+print("Final Loss:", final_loss.item())
+# Print the final predictions
+print("Final Predictions:", Y_pred_updated)
+# Print the final target values
+print("Final Target Values:", Y)

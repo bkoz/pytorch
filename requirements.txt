@@ -1,7 +1,6 @@
 torch
 numpy
 torchvision
-ray[all]
 pandas
 tqdm
 matplotlib
