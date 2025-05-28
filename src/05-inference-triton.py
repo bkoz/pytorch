@@ -50,14 +50,7 @@ if __name__ == "__main__":
   #
   # Check that $HOST is set.
   #
-  try:
-    assert os.getenv('HOST')
-    logging.debug(f"HOST = {os.getenv('HOST')}")
-  except:
-    logging.error("HOST environment variable is not set!")
-    exit()
-  
-  host = os.getenv('HOST')
+  host = os.getenv('HOST', 'http://localhost:8000')
 
 r = None
 try:
