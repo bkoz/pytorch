@@ -30,7 +30,7 @@ def create_model_repo(model_repository: str = "models"):
     and saves the model in the appropriate format.
     """
     cwd = os.getcwd()
-    target_dir = cwd + "/pytorch/" + model_repository
+    target_dir = cwd + "/" + model_repository
 
     if os.path.isdir(target_dir):
         logger.info(f"Directory '{target_dir}' exists.")
@@ -48,12 +48,11 @@ def save_model(name: str, version: int, model: torch.nn.Module):
     :param model: The PyTorch model to save.
     """
     cwd = os.getcwd()
-    model_path = f"{cwd}/pytorch/models/{name}/{version}/model.pt"
+    model_path = f"{cwd}/models/{name}/{version}/model.pt"
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
     torch.jit.save(torch.jit.script(model), model_path)
     logger.info(f"Model saved to {model_path}")
     # Save the model protobuf config file
-    # config_file = cwd + '/pytorch/src/config.pbtxt'
     config_file_path = cwd + "/pytorch/models/" + name + "/"
     config_pb.save_config(config_file_path)
     logger.info(f"Saved Triton Model Config to {config_file_path}")
@@ -120,5 +119,4 @@ logger.info(f"{new_var = } {pred_y = }")
 create_model_repo()
 save_model("lr", 1, our_model)
 save_model("lr", 2, our_model)
-
 
