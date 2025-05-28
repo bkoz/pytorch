@@ -6,6 +6,7 @@ import torch
 from torch.autograd import Variable
 import logging
 import os
+import config_pb 
 
 # Set up logging
 logger = logging.getLogger()
@@ -52,9 +53,9 @@ def save_model(name: str, version: int, model: torch.nn.Module):
     torch.jit.save(torch.jit.script(model), model_path)
     logger.info(f"Model saved to {model_path}")
     # Save the model protobuf config file
-    config_file = cwd + '/pytorch/src/config.pbtxt'
-    config_file_path = cwd + "/pytorch/models/" + name + '/config.pbtxt'
-    copy_file(config_file, config_file_path)
+    # config_file = cwd + '/pytorch/src/config.pbtxt'
+    config_file_path = cwd + "/pytorch/models/" + name + "/"
+    config_pb.save_config(config_file_path)
     logger.info(f"Saved Triton Model Config to {config_file_path}")
 
 class LinearRegressionModel(torch.nn.Module):
@@ -118,4 +119,6 @@ logger.info(f"{new_var = } {pred_y = }")
 
 create_model_repo()
 save_model("lr", 1, our_model)
+save_model("lr", 2, our_model)
+
 
