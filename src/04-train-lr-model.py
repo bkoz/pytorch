@@ -53,7 +53,7 @@ def save_model(name: str, version: int, model: torch.nn.Module):
     torch.jit.save(torch.jit.script(model), model_path)
     logger.info(f"Model saved to {model_path}")
     # Save the model protobuf config file
-    config_file_path = cwd + "/pytorch/models/" + name + "/"
+    config_file_path = cwd + "/models/" + name + "/"
     config_pb.save_config(config_file_path)
     logger.info(f"Saved Triton Model Config to {config_file_path}")
 
