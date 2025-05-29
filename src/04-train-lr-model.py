@@ -12,22 +12,9 @@ import config_pb
 logger = logging.getLogger()
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-def copy_file(src_file, output_file):
-    """
-    Concatenate multiple files into a single output file.
-    :param file_list: List of input file paths to concatenate.
-    :param output_file: Output file path.
-    """
-    with open(output_file, 'w') as outfile:
-            with open(src_file, 'r') as infile:
-                for line in infile:
-                    outfile.write(line)
-
 def create_model_repo(model_repository: str = "models"):
     """
     Create a model repository for Triton Inference Server.
-    This function creates a directory structure for the model
-    and saves the model in the appropriate format.
     """
     cwd = os.getcwd()
     target_dir = cwd + "/" + model_repository
@@ -40,22 +27,24 @@ def create_model_repo(model_repository: str = "models"):
         logger.info(f"Directory '{target_dir}' created.")
 
 
-def save_model(name: str, version: int, model: torch.nn.Module):
+def save_model(repo_name: str, name: str, version: int, model: torch.nn.Module):
     """
-    Save the PyTorch model to a file.
+    Save the PyTorch model to a file. This function creates a directory structure for the model
+    and saves the model in the appropriate format.
     :param name: Name of the model.
     :param version: Version of the model.
     :param model: The PyTorch model to save.
     """
     cwd = os.getcwd()
-    model_path = f"{cwd}/models/{name}/{version}/model.pt"
+    model_path = f'{cwd}/{repo_name}/{name}/{version}/model.pt'
     os.makedirs(os.path.dirname(model_path), exist_ok=True)
     torch.jit.save(torch.jit.script(model), model_path)
-    logger.info(f"Model saved to {model_path}")
+    logger.info(f'Model saved to {model_path}')
     # Save the model protobuf config file
-    config_file_path = cwd + "/models/" + name + "/"
+    config_file_path = f'{cwd}/{repo_name}/{name}/'
     config_pb.save_config(config_file_path)
-    logger.info(f"Saved Triton Model Config to {config_file_path}")
+    logger.info(f'Saved Triton Model Config to {config_file_path}')
+
 
 class LinearRegressionModel(torch.nn.Module):
     """
@@ -116,7 +105,9 @@ pred_y = our_model(new_var)
 
 logger.info(f"{new_var = } {pred_y = }")
 
-create_model_repo()
-save_model("lr", 1, our_model)
-save_model("lr", 2, our_model)
+repo_name = "models"
+model_name = "lr"
+create_model_repo(repo_name)
+save_model(repo_name, model_name, 1, our_model)
+save_model(repo_name, model_name, 2, our_model)
 
