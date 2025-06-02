@@ -76,6 +76,8 @@ optimizer = torch.optim.SGD(our_model.parameters(), lr = 0.01)
 # Training data
 x_data = Variable(torch.Tensor([[1.0], [2.0], [3.0]]))
 y_data = Variable(torch.Tensor([[2.0], [4.0], [6.0]]))
+x_data = Variable(torch.Tensor([[1.0], [2.0], [3.0]]))
+y_data = Variable(torch.Tensor([[4.0], [6.0], [9.0]]))
 
 # Tell PyTorch to track the gradients of the input data
 # so we can compute the gradients of the loss with respect to the input data.
@@ -108,6 +110,5 @@ logger.info(f"{new_var = } {pred_y = }")
 repo_name = "models"
 model_name = "lr"
 create_model_repo(repo_name)
-save_model(repo_name, model_name, 1, our_model)
 save_model(repo_name, model_name, 2, our_model)
 

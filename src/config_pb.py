@@ -17,6 +17,7 @@ def save_config(model_path: str):
         f.write("name: \"lr\"\n")
         f.write("platform: \"pytorch_libtorch\"\n")
         f.write("max_batch_size: 0  # Set to 0 for no batching, or a positive integer for max batch size\n")
+        f.write("version_policy: { all { }}\n")
         f.write("input [\n")
         f.write("  {\n")
         f.write("    name: \"input_name\"\n")
