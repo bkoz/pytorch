@@ -113,6 +113,7 @@ logger.info(f"{new_var = } {pred_y = }")
 
 repo_name = "models"
 model_name = "lr"
+model_version = 2
 create_model_repo(repo_name)
-save_model(repo_name, model_name, 2, our_model)
+save_model(repo_name, model_name, model_version, our_model)
 
